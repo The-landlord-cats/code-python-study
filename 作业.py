@@ -27,6 +27,9 @@ for i in range(1, 1001):
     if number_special == i:
         sum_t += i
 print(sum_t)
+
+print("3")
+print("4")
                         
 
 
