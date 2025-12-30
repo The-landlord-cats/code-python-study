@@ -8,3 +8,22 @@ def calculator():
     else:
         print(f"错误！不支持的运算符{tool},仅支持(+、-、*、/)")
 calculator()
+def calculator():
+    number_one = int(input("请输入第一个数字:"))
+    number_two = int(input("请输入第二个数字:"))
+    tool = input("请输入运算符(+、-、*、/):")
+    if tool == "+":
+        result = number_one + number_two
+        print(f"计算结果:{number_one} + {number_two} = {result}")
+    elif tool == "-":
+        result = number_one - number_two
+        print(f"计算结果:{number_one} - {number_two} = {result}")
+    elif tool == "*":
+        result = number_one * number_two
+        print(f"计算结果:{number_one} * {number_two} = {result}")
+    elif tool == "/":
+        result = number_one / number_two
+        print(f"计算结果:{number_one} / {number_two} = {result}")
+    else:
+        print(f"错误！不支持的运算符{tool},仅支持(+、-、*、/)")
+calculator()
