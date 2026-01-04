@@ -46,7 +46,7 @@ def collection_call():
     for i in student_list_sum:
         print(f"\n当前点名:{i['姓名']}  {i['学号']}")
         while 1:
-            student_state = input("请输入出勤状态（出勤/迟到/缺勤/请假）：")
+            student_state = input("请输入出勤状态（出勤/迟到/缺勤/请假/公差）：")
             if student_state in ["出勤", "迟到", "缺勤", "请假", "公差"]:
                 student_record_sum.append({
                     "学号": i["学号"],
@@ -137,7 +137,7 @@ def show_record():
     print(f"公差人数：{tolreance}")
     print("\n===== 详细考勤名单 =====")
     for g in student_record_sum:
-        print(f"{g['警号']}\t{g['姓名']}\t{g['状态']}")
+        print(f"{g['学号']}\t{g['姓名']}\t{g['状态']}")
     print("\n")
 
 
