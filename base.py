@@ -62,49 +62,8 @@ def collection_call():
         f.write(f"日期：{date}\n")
         f.write("学号,姓名,状态\n")
         for i in student_record_sum:
-            f.write({"学号":i["学号"],"姓名":i["姓名"],"状态":i["状态"]})
+            f.write(f"{i['学号']},{i['姓名']},{i['状态']}\n")
     print("===== 本次点名完成，考勤记录已保存 =====\n")
-    return date
-
-
-def id_name():
-    ask_id = input("输入想查询对应名字的学号:")
-    ask_name = 0
-    if os.path.exists("学员名单.txt"):
-        student_list_sum.clear()
-        with open("学员名单.txt", "r", encoding="utf-8") as f:
-            line = f.readlines()
-            for i in line:
-                i = i.strip()
-                if i:
-                    student_id, name = i.split(",")
-                    student_list_sum.append({"学号": student_id, "姓名": name})
-    student_record_sum_dict = eval(student_list_sum)
-    for i in student_record_sum_dict:
-        if i["学号"] == ask_id:
-            ask_name = i["姓名"]
-    print(f"您要查询的学号{ask_id}对应学员的名字是{ask_name}")
-
-
-def student_person_record_ask(date):
-    target_name = input("请输入要查询的姓名:")
-    target_state = input("请输入要统计的状态(例如:出勤/迟到/缺勤/请假/公差):")
-    count = 0
-    with open(f"考勤记录_{date}.txt", "r", encoding="utf-8") as f:
-        line = f.readlines()      
-        for line_num, i in enumerate(line, 1):
-            i = i.strip()  
-            if not i:  
-                continue
-            dic_true = eval(line)
-            if isinstance(dic_true, dict) and "姓名" in dic_true and "状态" in dic_true:
-                if dic_true["姓名"] == target_name and dic_true["状态"] == target_state:
-                        count += 1
-                print(f"第{line_num}行匹配：{dic_true}")
-        print(f"===== 统计结果 =====\n")
-        print(f"姓名：{target_name}")
-        print(f"状态：{target_state}")
-        print(f"出现次数：{count}")
         
 
 def show_record():
@@ -137,8 +96,56 @@ def show_record():
     print(f"公差人数：{tolreance}")
     print("\n===== 详细考勤名单 =====")
     for g in student_record_sum:
-        print(f"{g['学号']}\t{g['姓名']}\t{g['状态']}")
+        print(f"{g['学号']},{g['姓名']},{g['状态']}\n")
     print("\n")
+
+def student_person_record_ask(date):
+    target_name = input("请输入要查询的姓名:")
+    target_state = input("请输入要统计的状态(例如:出勤/迟到/缺勤/请假/公差):")
+    count = 0
+    file_name = f"考勤记录_{date}.txt"  
+    if not os.path.exists(file_name):
+        print(f"错误：{file_name} 文件不存在！请确认日期是否正确。")
+        return
+    with open(file_name, "r", encoding="utf-8") as f:
+        lines = f.readlines()  
+        for line_num, line in enumerate(lines[2:], start=3):
+            line = line.strip()  
+            if not line:  
+                continue
+            
+            try:
+                student_id, name, state = line.split(",")
+            except ValueError:
+                print(f"第{line_num}行格式错误（非 学号,姓名,状态 格式），跳过该行")
+                continue
+            if name == target_name and state == target_state:
+                count += 1
+                print(f"第{line_num}行匹配: 学号={student_id}, 姓名={name}, 状态={state}")
+    
+        print(f"===== 统计结果 =====\n")
+        print(f"姓名：{target_name}")
+        print(f"状态：{target_state}")
+        print(f"出现次数：{count}")
+
+
+def id_name():
+    ask_id = input("输入想查询对应名字的学号:")
+    ask_name = 0
+    if os.path.exists("学员名单.txt"):
+        student_list_sum.clear()
+        with open("学员名单.txt", "r", encoding="utf-8") as f:
+            line = f.readlines()
+            for i in line:
+                i = i.strip()
+                if i:
+                    student_id, name = i.split(",")
+                    student_list_sum.append({"学号": student_id, "姓名": name})
+    for g in student_list_sum:
+        if g["学号"] == ask_id:
+            ask_name = g["姓名"]
+            break
+    print(f"您要查询的学号{ask_id}对应学员的名字是{ask_name}")
 
 
 def main():
@@ -163,7 +170,8 @@ def main():
         elif i == "4":
             show_record()
         elif i == "5":
-            student_person_record_ask()
+            date = input("请输入想查询的点名情况的日期(一定是已经存在的日期):")
+            student_person_record_ask(date)
         elif i == "6":
             id_name()
         elif i == "7":
