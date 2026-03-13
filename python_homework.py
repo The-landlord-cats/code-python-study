@@ -1,6 +1,8 @@
 import os
 student_record_sum = []
 student_list_sum = []
+
+
 def input_student():
     while 1:
         student_id = input("请输入学号(输入stop 停止录入):")
@@ -14,7 +16,7 @@ def input_student():
                 print(f"学号{student_id}已存在，请勿重复录入！")
                 break
         if true_write == 0:
-            student_list_sum.append({"学号":student_id, "姓名":student_name})
+            student_list_sum.append({"学号": student_id, "姓名": student_name})
             print(f"学员{student_name}录入成功")
     with open("学员名单.txt", "w", encoding="utf-8") as f:
         for g in student_list_sum:
@@ -64,7 +66,7 @@ def collection_call():
         for i in student_record_sum:
             f.write(f"{i['学号']},{i['姓名']},{i['状态']}\n")
     print("===== 本次点名完成，考勤记录已保存 =====\n")
-        
+
 
 def show_record():
     if not student_record_sum:
@@ -76,7 +78,7 @@ def show_record():
     late = 0     # 迟到
     absent = 0   # 缺勤
     leave = 0    # 请假
-    tolreance = 0 # 公差
+    tolreance = 0  # 公差
     for i in student_record_sum:
         if i["状态"] == "出勤":
             come += 1
@@ -99,21 +101,22 @@ def show_record():
         print(f"{g['学号']},{g['姓名']},{g['状态']}\n")
     print("\n")
 
+
 def student_person_record_ask(date):
     target_name = input("请输入要查询的姓名:")
     target_state = input("请输入要统计的状态(例如:出勤/迟到/缺勤/请假/公差):")
     count = 0
-    file_name = f"考勤记录_{date}.txt"  
+    file_name = f"考勤记录_{date}.txt"
     if not os.path.exists(file_name):
         print(f"错误：{file_name} 文件不存在！请确认日期是否正确。")
         return
     with open(file_name, "r", encoding="utf-8") as f:
-        lines = f.readlines()  
+        lines = f.readlines()
         for line_num, line in enumerate(lines[2:], start=3):
-            line = line.strip()  
-            if not line:  
+            line = line.strip()
+            if not line:
                 continue
-            
+
             try:
                 student_id, name, state = line.split(",")
             except ValueError:
@@ -122,7 +125,7 @@ def student_person_record_ask(date):
             if name == target_name and state == target_state:
                 count += 1
                 print(f"第{line_num}行匹配: 学号={student_id}, 姓名={name}, 状态={state}")
-    
+
         print(f"===== 统计结果 =====\n")
         print(f"姓名：{target_name}")
         print(f"状态：{target_state}")
@@ -184,4 +187,3 @@ def main():
 if __name__ == "__main__":
     print("欢迎使用空军航空大学学员管理系统\n")
     main()
-

@@ -1,30 +1,139 @@
-"""""
-Python入门习题第100练: 中文文本人名提取与频率统计
-需求: 从鹿鼎记.txt文件中提取所有人名, 并统计这些人名出现的频率, 打印出现频率最高的前20个人名。
-"""""
-import jieba.posseg as posseg
-# 导入jieba.posseg模块,用于分词和词性标注
-# 导入pandas模块,用于数据处理
-import pandas as pd
+X = "X"
+O = "O"
+EMPTY = " "
 
-with open("鹿鼎记.txt", encoding="utf-8") as f:
-    # 定义变量保存读取到的所有数据
-    content = ""
-# 持续读取,直到为"为止
-    while True:
-        # 以行的方式读取
-        text = f.readline()
-        # 如果读取到的内容为空字符
-        if text == "":
-            # 退出循环
-            break
-        # 将读取到的内容拼接到content中
-        content = content + text
-        # 定义列表保存提取到的人名
-        words = []
-        # 对文本进行分词和词性标注
-        for word, flag in posseg.cut(content):
-            if flag == "nr":
-                # 将人名添加到到表
-                words.append(word)
-        print(pd.Series(words).value_counts()[:20])
+
+def ask_yes_no(question):
+    response = None
+    while response not in ("y", "n"):
+        response = input(question).lower()
+    return response
+
+
+def ask_number(question, low, high):
+    response = None
+    while response not in range(low, high):
+        response = int(input(question))
+    return response
+
+
+def pieces():
+    go_first = ask_yes_no("玩家你是否先走 (y/n): ")
+    if go_first == "y":
+        print("\n玩家你先走.")
+        human = X
+        computer = O
+    else:
+        print("\n电脑先走.")
+        computer = X
+        human = O
+    return computer, human
+
+
+def new_board():
+    board = []
+    for square in range(9):
+        board.append(EMPTY)
+    return board
+
+
+def display_board(board):
+    board2 = board[:]
+    for i in range(len(board)):
+        if board[i] == EMPTY:
+            board2[i] = i
+    print("\t", board2[0], "|", board2[1], "|", board2[2])
+    print("\t", "---------")
+    print("\t", board2[3], "|", board2[4], "|", board2[5])
+    print("\t", "---------")
+    print("\t", board2[6], "|", board2[7], "|", board2[8], "\n")
+
+
+def legal_moves(board):
+    moves = []
+    for square in range(9):
+        if board[square] == EMPTY:
+            moves.append(square)
+    return moves
+
+
+def winner(board):
+    Ways_To_Win = ((0, 1, 2),  (3, 4, 5), (6, 7, 8),  (0, 3, 6),
+                   (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
+    for row in Ways_To_Win:
+        if board[row[0]] == board[row[1]] == board[row[2]] != EMPTY:
+            winner = board[row[0]]
+            return winner
+    if EMPTY not in board:
+        return "TIE"
+    return False
+
+
+def human_move(board, human):
+    legal = legal_moves(board)
+    move = None
+    while move not in legal:
+        move = ask_number("你走那个位置? (0 - 9):", 0, 9)
+        if move not in legal:
+            print("\n此位置已经落过子了")
+    return move
+
+
+def computer_move(board, computer, human):
+    board = board[:]
+    Best_ways = (4, 0, 2, 6, 8, 1, 3, 5, 7)
+    for move in legal_moves(board):
+        board[move] = computer
+        if winner(board) == computer:
+            print("电脑下棋位置：", move)
+            return move
+        board[move] = EMPTY
+
+    for move in legal_moves(board):
+        board[move] = human
+        if winner(board) == human:
+            print("电脑下棋位置：", move)
+            return move
+        board[move] = EMPTY
+
+    for move in Best_ways:
+        if move in legal_moves(board):
+            print("电脑下棋位置：", move)
+            return move
+
+
+def next_turn(turn):
+    if turn == X:
+        return 0
+    else:
+        return X
+
+
+def main():
+    computer, human = pieces()
+    turn = X
+    board = new_board()
+    display_board(board)
+
+    while not winner(board):
+        if turn == human:
+            move = human_move(board, human)
+            board[move] = human
+        else:
+            move = computer_move(board, computer, human)
+            board[move] = computer
+        display_board(board)
+        turn = next_turn(turn)
+
+    the_winner = winner(board)
+
+    if the_winner == computer:
+        print("计算机赢!\n")
+    elif the_winner == human:
+        print("玩家赢!\n")
+    elif the_winner == "TIE":
+        print("平局和棋,游戏结束\n")
+
+
+main()
+input("按任意键退出游戏.")
